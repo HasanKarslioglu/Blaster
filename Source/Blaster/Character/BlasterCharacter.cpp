@@ -4,7 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "Components/WidgetComponent.h"
 //--------------------------CONSTRUCTOR--------------------------//
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -22,6 +22,10 @@ ABlasterCharacter::ABlasterCharacter()
 	
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	
+	OverHeadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverHeadWidget"));
+	OverHeadWidget->SetupAttachment(RootComponent);
+	
 }
 
 //--------------------------TICK--------------------------//
@@ -63,7 +67,6 @@ void ABlasterCharacter::MoveForward(float Value)
 }
 void ABlasterCharacter::MoveRight(float Value)
 {
-	
 	const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 	const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 	AddMovementInput(Direction, Value);
