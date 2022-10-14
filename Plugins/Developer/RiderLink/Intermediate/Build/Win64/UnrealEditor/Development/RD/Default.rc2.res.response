@@ -63,5 +63,5 @@
 /DBUILD_ICON_FILE_NAME="\"..\\Build\\Windows\\Resources\\Default.ico\""
 /DPROJECT_COPYRIGHT_STRING="Fill out your copyright notice in the Description page of Project Settings."
 /DPROJECT_PRODUCT_IDENTIFIER=Blaster
-/fo "C:\Users\hasan\OneDrive\Documents\Unreal Projects\Blaster\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\Default.rc2.res"
+/fo "C:\Users\Hasan\Desktop\Blaster 5.0\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RD\Default.rc2.res"
 "..\Build\Windows\Resources\Default.rc2"
