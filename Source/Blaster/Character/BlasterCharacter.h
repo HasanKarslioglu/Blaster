@@ -15,7 +15,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+	virtual void PostInitializeComponents() override;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -26,7 +26,11 @@ protected:
 	void Turn(float Value);
 	void LookUp(float Value);
 	void Jump();
-	
+	void EquipButtonPressed();
+	void CrouchButtonPressed();
+	void AimButtonPressed();
+	void AimButtonReleased();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* SpringArm;
@@ -41,10 +45,18 @@ private:
 	class AWeapon* OverlappingWeapon;
 
 	//It is called automatically when the variables gets replicated. 
+	//And it's just one way information transfer Server->clients 
 	UFUNCTION()
-	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);	
+
+	UPROPERTY(VisibleAnywhere)
+	class UCombatComponent* Combat;
 	
+	UFUNCTION(Server, Reliable)
+	void ServerEquipButtonPressed();
 	
 public:	
-	void SetOverlappingWeapon(AWeapon* Weapon);	
+	void SetOverlappingWeapon(AWeapon* Weapon);
+	bool IsEquippedWeapon();
+	bool IsAiming();
 };
