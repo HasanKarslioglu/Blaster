@@ -21,7 +21,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void EquipWeapon(AWeapon* WeaponToEquip);
-
 	
 protected:
 	virtual void BeginPlay() override;
@@ -30,10 +29,13 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bIsAiming);
 	
+	UFUNCTION()
+	void OnRep_EquippedWeapon();
+	
 private:
 	ABlasterCharacter* Character;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeapon* EquippedWeapon;
 	
 	UPROPERTY(Replicated)
