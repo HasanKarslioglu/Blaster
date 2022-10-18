@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/CapsuleComponent.h"
 
 //--------------------------CONSTRUCTOR--------------------------//
 ABlasterCharacter::ABlasterCharacter()
@@ -35,6 +36,10 @@ ABlasterCharacter::ABlasterCharacter()
 	Combat->SetIsReplicated(true);
 	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
 }	
 
 //--------------------------INPUT COMPONENT--------------------------//
@@ -166,6 +171,10 @@ void ABlasterCharacter::LookUp(float Value)
 void ABlasterCharacter::Jump()
 {
 	Super::Jump();
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
 }
 
 

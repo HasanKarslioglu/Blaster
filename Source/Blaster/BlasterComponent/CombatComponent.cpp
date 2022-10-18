@@ -14,7 +14,8 @@
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	BaseWalkSpeed = 600.f;
+	AimWalkSpeed = 350.f;
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -30,13 +31,35 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (Character)
+	{
+		if (bAiming)
+		{
+			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		}
+		else
+		{
+			Character->GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
+		}
+	}
 }
 
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	bAiming = bIsAiming;
 	ServerSetAiming(bAiming);
+	
+	if (Character)
+	{
+		if (bAiming)
+		{
+			Character->GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
+		}
+		else
+		{
+			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		}
+	}
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
