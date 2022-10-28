@@ -35,11 +35,11 @@ void UCombatComponent::BeginPlay()
 	{
 		if (bAiming)
 		{
-			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+			Character->GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
 		}
 		else
 		{
-			Character->GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
+			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 		}
 	}
 }
@@ -59,13 +59,18 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 		{
 			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 		}
-	}
+	}	
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 {
 	bAiming = bIsAiming;
-}
+	
+	if (Character)
+    	{
+    		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+    	}
+}	
 
 //--------------------------TICK--------------------------//
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

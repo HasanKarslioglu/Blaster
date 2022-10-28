@@ -246,6 +246,13 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		AO_Yaw = 0.f;
 	}
+	
+	AO_Pitch = GetBaseAimRotation().Pitch;
+
+	if (AO_Pitch > 90 && !IsLocallyControlled())
+	{
+		AO_Pitch -= 360;
+	}
 }
 
 
