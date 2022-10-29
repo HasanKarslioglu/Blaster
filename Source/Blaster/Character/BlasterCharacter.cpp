@@ -255,6 +255,11 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 	}
 }
 
+AWeapon* ABlasterCharacter::GetEquippedWeapon()
+{
+	if (Combat == nullptr) return nullptr;
+	return Combat->EquippedWeapon;
+}
 
 
 
