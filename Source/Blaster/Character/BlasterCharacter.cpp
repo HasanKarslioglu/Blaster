@@ -3,6 +3,8 @@
 #include "BlasterCharacter.h"
 
 #include "Blaster/BlasterComponent/CombatComponent.h"
+#include "Blaster/BlasterTypes/TurningInPlace.h"
+#include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -40,6 +42,10 @@ ABlasterCharacter::ABlasterCharacter()
 
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	NetUpdateFrequency = 66.f;
+	MinNetUpdateFrequency = 33.f;
 
 }	
 
@@ -180,7 +186,6 @@ void ABlasterCharacter::Jump()
 	}
 }
 
-
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
 	if (IsLocallyControlled())
@@ -234,10 +239,15 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 
 	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
 	{
-		bUseControllerRotationYaw = false;
+		bUseControllerRotationYaw = true;
 		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		AO_Yaw = DeltaAimRotation.Yaw;
+		if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+		{
+			InterpAO_Yaw = AO_Yaw;
+		}
+		TurnInPlace(DeltaTime);
 	}
 
 	if (Speed > 0 || bIsInAir) // running or jumping
@@ -245,7 +255,8 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		bUseControllerRotationYaw = true;
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		AO_Yaw = 0.f;
-	}
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+	} 
 	
 	AO_Pitch = GetBaseAimRotation().Pitch;
 
@@ -254,6 +265,28 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		AO_Pitch -= 360;
 	}
 }
+
+void ABlasterCharacter::TurnInPlace(float DeltaTime)
+{
+	if (AO_Yaw > 90)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Right;
+	}
+	else if (AO_Yaw < -90) {
+		TurningInPlace = ETurningInPlace::ETIP_Left;
+	}
+	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	{
+		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 6.f);
+		AO_Yaw = InterpAO_Yaw;
+		if (FMath::Abs(AO_Yaw) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
+}
+
 
 AWeapon* ABlasterCharacter::GetEquippedWeapon()
 {
