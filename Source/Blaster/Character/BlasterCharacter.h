@@ -20,13 +20,13 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void Jump() override;
+	
 	//--------------------------MOVEMENT FUNCTIONS--------------------------//
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
-	void Jump();
 	void EquipButtonPressed();
 	void CrouchButtonPressed();
 	void AimButtonPressed();
