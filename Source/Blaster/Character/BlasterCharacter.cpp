@@ -68,8 +68,11 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ABlasterCharacter::CrouchButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ABlasterCharacter::AimButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ABlasterCharacter::AimButtonReleased);
-	
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABlasterCharacter::FireButtonPressed);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ABlasterCharacter::FireButtonReleased);
+
 }
+
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -87,6 +90,21 @@ void ABlasterCharacter::PostInitializeComponents()
 		Combat->Character = this;
 	}
 }
+
+void ABlasterCharacter::PlayFireMontage(bool bAiming)
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName = bAiming ? FName("RiffleAim") : FName("RiffleHip");	
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}	
+}
+
 
 //--------------------------EQUIPPED WEAPON ON CLIENT--------------------------//
 void ABlasterCharacter::EquipButtonPressed()
@@ -141,6 +159,23 @@ void ABlasterCharacter::AimButtonReleased()
 	}
 }
 
+void ABlasterCharacter::FireButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->FireButtonPressed(true);	
+	}
+}
+
+void ABlasterCharacter::FireButtonReleased()
+{
+	if (Combat)
+	{
+		Combat->FireButtonPressed(false);	
+	}
+}
+
+
 //--------------------------TICK--------------------------//
 void ABlasterCharacter::Tick(float DeltaTime)
 {
@@ -185,12 +220,9 @@ void ABlasterCharacter::Jump()
 	if (bIsCrouched)
 	{
 		UnCrouch();
-		Super::Jump();
 	}
-	else
-	{
-		Super::Jump();
-	}
+	
+	Super::Jump();
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
