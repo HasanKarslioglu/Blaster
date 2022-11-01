@@ -5,6 +5,7 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+#define TRACE_LENGHT 50000.f;
 
 class AWeapon;
 class ABlasterCharacter;
@@ -40,7 +41,9 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire();
-	
+
+	void TraceUnderCrosshair(FHitResult& TraceHitResult);
+		
 private:
 	ABlasterCharacter* Character;
 	
@@ -56,6 +59,8 @@ private:
 	float AimWalkSpeed;
 
 	bool bFireButtonPressed;
+
+	FVector HitTarget;
 
 public:	
 

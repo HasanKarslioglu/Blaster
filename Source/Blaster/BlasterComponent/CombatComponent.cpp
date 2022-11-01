@@ -1,19 +1,18 @@
 
 #include "CombatComponent.h"
 
-#include <filesystem>
-
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 //--------------------------CONSTRUCTER--------------------------//
 UCombatComponent::UCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 350.f;
 }
@@ -76,7 +75,9 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	FHitResult HitResult;
+	TraceUnderCrosshair(HitResult);
 }
 
 //--------------------------EQUIPPED WEAPON--------------------------//
@@ -123,7 +124,93 @@ void UCombatComponent::ServerFire_Implementation()
 void UCombatComponent::MulticastFire_Implementation()
 {
 	Character->PlayFireMontage(bAiming);
-	EquippedWeapon->Fire();
+	EquippedWeapon->Fire(HitTarget);
 }
+
+
+void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
+{
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+
+	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+	FVector CrosshairWorldLocation;
+	FVector CrosshairWorldDirection;
+
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrosshairLocation,
+		CrosshairWorldLocation,
+		CrosshairWorldDirection
+		);
+
+	if (bScreenToWorld)
+	{
+		FVector Start = CrosshairWorldLocation;
+		FVector End = Start + CrosshairWorldDirection * TRACE_LENGHT; 
+		
+		GetWorld()->LineTraceSingleByChannel(
+			TraceHitResult,
+			Start,
+			End,
+			ECollisionChannel::ECC_Visibility
+		);
+
+		if (!TraceHitResult.bBlockingHit)
+		{
+			TraceHitResult.ImpactPoint = End;
+			HitTarget = End;
+		}
+		else
+		{
+			HitTarget = TraceHitResult.ImpactPoint;
+			DrawDebugSphere(
+				GetWorld(),
+				TraceHitResult.ImpactPoint,
+				12.f,
+				12,
+				FColor::Blue
+			);			
+		}
+		
+	}
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
