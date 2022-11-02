@@ -22,30 +22,35 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Jump() override;
+
 	
 	//--------------------------MOVEMENT FUNCTIONS--------------------------//
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+
+	
+	//--------------------------FIRE AND CROUCH BUTTON PRESSED AND RELEASED--------------------------//
 	void EquipButtonPressed();
 	void CrouchButtonPressed();
 	void AimButtonPressed();
 	void AimButtonReleased();
-	void AimOffset(float DeltaTime);
 	void FireButtonPressed();
 	void FireButtonReleased();
+	
+	void AimOffset(float DeltaTime);
 
 private:
+
+	
+	//--------------------------MESH AND CAMERA--------------------------//
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* SpringArm;
-	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* OverHeadWidget;
-
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
 
@@ -60,18 +65,23 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
 
+
+	//--------------------------TURNING IN PLACE--------------------------//
 	float AO_Yaw;
 	float AO_Pitch;
 	float InterpAO_Yaw;
 	FRotator StartingAimRotation;
-	
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
+
 	
+	//--------------------------FIRE WEAPON--------------------------//
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+
 	
-public:	
+	//--------------------------SETTERS ANG GETTERS--------------------------//
+public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsEquippedWeapon();
 	bool IsAiming();
