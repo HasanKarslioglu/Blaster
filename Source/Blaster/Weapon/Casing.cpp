@@ -45,6 +45,7 @@ void ACasing::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrim
 	if (ShellSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
 	}
 	CasingMesh->SetNotifyRigidBodyCollision(false);
 }
