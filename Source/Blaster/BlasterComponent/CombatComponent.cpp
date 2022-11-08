@@ -171,7 +171,8 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 
 void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 {
-	if (Character == nullptr || Character->Controller) return;
+	if (Character == nullptr || Character->Controller == nullptr) return;
+	
 	if (!Controller)
 		Controller = Cast<ABlasterPlayerController>(Character->Controller);
 
@@ -193,7 +194,6 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 				HUDPackage.CrosshairsLeft = EquippedWeapon->CrosshairsLeft;
 				HUDPackage.CrosshairsBottom = EquippedWeapon->CrosshairsBottom;
 				HUDPackage.CrosshairsTop = EquippedWeapon->CrosshairsTop;
-				HUD->SetHUDPackage(HUDPackage);
 			}
 			else
 			{
@@ -202,8 +202,31 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 				HUDPackage.CrosshairsLeft = nullptr;
 				HUDPackage.CrosshairsBottom =nullptr;
 				HUDPackage.CrosshairsTop = nullptr;
-				HUD->SetHUDPackage(HUDPackage);
 			}
+		
+			// [0,600] -> [0,1] Calculate spread base on character speed
+
+			FVector2D InRange(0.f, Character->GetMovementComponent()->GetMaxSpeed());
+			FVector2D OutRange(0.f, 1.f);
+			if (Character->bIsCrouched)
+			{
+				InRange = FVector2D(0.f,Character->GetCharacterMovement()->MaxWalkSpeedCrouched);
+				OutRange = FVector2D(0.f, 0.4f);
+			}
+			FVector Velocity = Character->GetVelocity();
+			Velocity.Z = 0;
+			CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(InRange, OutRange, Velocity.Size());
+
+			if (Character->GetMovementComponent()->IsFalling())
+			{
+				CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 2.25f, DeltaTime, 5.f);
+			}
+			else
+			{
+				CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 25.f);
+			}			
+			HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
+			HUD->SetHUDPackage(HUDPackage);
 		}
 	}	
 }
