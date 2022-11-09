@@ -92,4 +92,6 @@ public:
 	AWeapon* GetEquippedWeapon();
 	
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const {return TurningInPlace;}
+	FORCEINLINE UCameraComponent* GetFollowCamera() const {return FollowCamera;};
+	FVector GetHitTarget() const;
 };

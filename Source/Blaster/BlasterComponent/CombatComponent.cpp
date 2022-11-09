@@ -5,6 +5,7 @@
 #include "Blaster/HUD/BlasterHUD.h"
 #include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Blaster/Weapon/Weapon.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,13 +34,11 @@ void UCombatComponent::BeginPlay()
 	Super::BeginPlay();
 	if (Character)
 	{
-		if (bAiming)
+		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		if (Character->GetFollowCamera())
 		{
-			Character->GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
-		}
-		else
-		{
-			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+			DefaultFOV = Character->GetFollowCamera()->FieldOfView;
+			CurrentFOV = DefaultFOV;
 		}
 	}
 }
@@ -77,7 +76,12 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SetHUDCrosshairs(DeltaTime);
+	if (Character && Character->IsLocallyControlled())
+	{
+		TraceUnderCrosshair(HitResult);
+		SetHUDCrosshairs(DeltaTime);
+		InterpFOV(DeltaTime);
+	}
 }
 
 //--------------------------EQUIPPED WEAPON--------------------------//
@@ -111,12 +115,12 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 {
 	bFireButtonPressed = bPressed;
 	
-	FHitResult HitResult;
 	TraceUnderCrosshair(HitResult);
 	
 	if (bFireButtonPressed && EquippedWeapon && Character)
 	{
-		ServerFire(HitResult.ImpactPoint);
+		ServerFire(HitTarget);
+		CrosshairFireFactor = 0.75f;
 	}
 }
 
@@ -165,6 +169,11 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 		if (!TraceHitResult.bBlockingHit)
 		{
 			TraceHitResult.ImpactPoint = End;
+			HitTarget = End;
+		}
+		else
+		{
+			HitTarget = TraceHitResult.ImpactPoint;
 		}
 	}
 }
@@ -224,12 +233,42 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 			else
 			{
 				CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 25.f);
-			}			
-			HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
+			}
+
+			if (bAiming)
+			{
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.55f, DeltaTime, 25.f);
+			}
+			else
+			{
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 25.f);
+			}
+
+			CrosshairFireFactor = FMath::FInterpTo(CrosshairFireFactor, 0.f, DeltaTime, 30.f);
+			HUDPackage.CrosshairSpread = 0.60f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor + CrosshairFireFactor;
 			HUD->SetHUDPackage(HUDPackage);
 		}
 	}	
 }
+
+void UCombatComponent::InterpFOV(float DeltaTime)
+{
+	if (EquippedWeapon == nullptr) return;
+
+	if (bAiming)
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
+	}
+	else
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
+	}
+	
+	if (Character && Character->GetFollowCamera())
+	{
+		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
+	}
+}	
 
 
 
