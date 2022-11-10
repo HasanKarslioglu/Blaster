@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blaster/HUD/BlasterHUD.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
@@ -81,6 +82,8 @@ private:
 
 	FHitResult HitResult;
 	FVector HitTarget;
-	
+
+	FHUDPackage HUDPackage;
+
 public:			
 };
