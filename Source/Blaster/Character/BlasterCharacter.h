@@ -54,7 +54,12 @@ private:
 	class UWidgetComponent* OverHeadWidget;
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
-
+	
+	void HideMeshIfCharacterClose();
+	UPROPERTY(EditAnywhere)
+	float CameraThresHold = 200.f;
+	
+		
 	//It is called automatically when the variables gets replicated. 
 	//And it's just one way information transfer Server->clients 
 	UFUNCTION()
