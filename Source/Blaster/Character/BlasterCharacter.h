@@ -20,6 +20,11 @@ public:
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
 	
+	void PlayHitReactMontage();
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
+
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Jump() override;
@@ -81,10 +86,11 @@ private:
 	void TurnInPlace(float DeltaTime);
 
 	
-	//--------------------------FIRE WEAPON--------------------------//
+	//--------------------------ANIM MONTAGES--------------------------//
 	UPROPERTY(EditAnywhere, Category = Combat)
-	class UAnimMontage* FireWeaponMontage;
-
+	UAnimMontage* FireWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* HitReactMontage;
 	
 	//--------------------------SETTERS ANG GETTERS--------------------------//
 public:

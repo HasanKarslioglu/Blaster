@@ -4,7 +4,6 @@
 
 #include "Blaster/BlasterComponent/CombatComponent.h"
 #include "Blaster/BlasterTypes/TurningInPlace.h"
-#include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -13,6 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Blaster/Blaster.h"
 
 //--------------------------CONSTRUCTOR--------------------------//
 ABlasterCharacter::ABlasterCharacter()
@@ -41,9 +41,10 @@ ABlasterCharacter::ABlasterCharacter()
 	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	
 	
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	NetUpdateFrequency = 66.f;
@@ -106,6 +107,23 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 	}	
 }
 
+void ABlasterCharacter::PlayHitReactMontage()
+{
+	if (Combat == nullptr && Combat->EquippedWeapon == nullptr) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		FName SectionName("FromFront");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ABlasterCharacter::MulticastHit_Implementation()
+{
+	PlayHitReactMontage();
+}
 
 //--------------------------EQUIPPED WEAPON ON CLIENT--------------------------//
 void ABlasterCharacter::EquipButtonPressed()
