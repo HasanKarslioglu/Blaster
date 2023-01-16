@@ -23,6 +23,9 @@ protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
+	
 private:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxCollision;
@@ -40,5 +43,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ImpactSound;
+
 	
 };

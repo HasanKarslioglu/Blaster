@@ -1,7 +1,6 @@
 
 
 #include "BlasterCharacter.h"
-
 #include "Blaster/BlasterComponent/CombatComponent.h"
 #include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "Blaster/Weapon/Weapon.h"
@@ -10,9 +9,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Blaster/Blaster.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
 
 //--------------------------CONSTRUCTOR--------------------------//
 ABlasterCharacter::ABlasterCharacter()
@@ -121,10 +120,15 @@ void ABlasterCharacter::PlayHitReactMontage()
 	}
 }
 
-void ABlasterCharacter::MulticastHit_Implementation()
+void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatedBy, AActor* DamageCauser)
 {
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	
+	UpdateHUDHealth();
 	PlayHitReactMontage();
 }
+
 
 //--------------------------EQUIPPED WEAPON ON CLIENT--------------------------//
 void ABlasterCharacter::EquipButtonPressed()
@@ -216,7 +220,12 @@ void ABlasterCharacter::Tick(float DeltaTime)
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	UpdateHUDHealth();
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
+	}
 }
 
 //--------------------------MOVEMENT FUNCTIONS--------------------------//
@@ -251,6 +260,15 @@ void ABlasterCharacter::Jump()
 	}
 	
 	Super::Jump();
+}
+
+void ABlasterCharacter::UpdateHUDHealth()
+{
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+	if (BlasterPlayerController)
+	{
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
@@ -407,7 +425,8 @@ void ABlasterCharacter::HideMeshIfCharacterClose()
 
 void ABlasterCharacter::OnRep_Health()
 {
-	
+	UpdateHUDHealth();
+	PlayHitReactMontage();
 }
 
 
