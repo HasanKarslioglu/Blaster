@@ -14,7 +14,8 @@ public:
 	AProjectile();
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Destroyed() override;
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_HitParticleAndSound();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -40,6 +41,4 @@ private:
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ImpactSound;
 	
-public:	
-
 };

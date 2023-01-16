@@ -55,6 +55,7 @@ void AProjectile::Tick(float DeltaTime)
 
 }
 
+
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
@@ -62,12 +63,14 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	{
 		BlasterCharacter->MulticastHit();
 	}
-	
-	
-	Destroy();
+
+	if (HasAuthority())
+	{
+		Multicast_HitParticleAndSound();
+	}
 }
 
-void AProjectile::Destroyed()
+void AProjectile::Multicast_HitParticleAndSound_Implementation()
 {
 	Super::Destroyed();
 	if (ImpactParticle)
@@ -78,5 +81,7 @@ void AProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
 	}
+	Destroy();
 }
+
 

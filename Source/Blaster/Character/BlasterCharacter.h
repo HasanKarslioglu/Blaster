@@ -48,8 +48,6 @@ protected:
 	void AimOffset(float DeltaTime);
 
 private:
-
-	
 	//--------------------------MESH AND CAMERA--------------------------//
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* SpringArm;
@@ -75,8 +73,7 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
-
-
+	
 	//--------------------------TURNING IN PLACE--------------------------//
 	float AO_Yaw;
 	float AO_Pitch;
@@ -84,13 +81,24 @@ private:
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-
+	void SimProxiesTurn();
+	bool bRotateRootBone;
+	void CalculateAO_Pitch();
 	
 	//--------------------------ANIM MONTAGES--------------------------//
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* FireWeaponMontage;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float Health = 100.f;
+
+	UFUNCTION()
+	void OnRep_Health();
 	
 	//--------------------------SETTERS ANG GETTERS--------------------------//
 public:
@@ -104,6 +112,7 @@ public:
 	AWeapon* GetEquippedWeapon();
 	
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const {return TurningInPlace;}
-	FORCEINLINE UCameraComponent* GetFollowCamera() const {return FollowCamera;};
+	FORCEINLINE UCameraComponent* GetFollowCamera() const {return FollowCamera;}
 	FVector GetHitTarget() const;
+	FORCEINLINE bool ShouldRotateRootBone() const {return bRotateRootBone;}
 };

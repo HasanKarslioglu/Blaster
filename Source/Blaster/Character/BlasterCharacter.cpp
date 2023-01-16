@@ -81,6 +81,7 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
+	DOREPLIFETIME(ABlasterCharacter, Health);
 }
 
 void ABlasterCharacter::PostInitializeComponents()
@@ -199,8 +200,15 @@ void ABlasterCharacter::FireButtonReleased()
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	AimOffset(DeltaTime);
+
+	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy)
+	{
+		AimOffset(DeltaTime);
+	}
+	else
+	{
+		SimProxiesTurn();		
+	}
 	HideMeshIfCharacterClose();
 }
 
@@ -298,6 +306,7 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 
 	if (Speed == 0.f && !bIsInAir) // standing still, not jumping
 	{
+		bRotateRootBone = true;
 		bUseControllerRotationYaw = true;
 		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
@@ -311,14 +320,19 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 
 	if (Speed > 0 || bIsInAir) // running or jumping
 	{
+		bRotateRootBone = false;
 		bUseControllerRotationYaw = true;
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		AO_Yaw = 0.f;
 		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-	} 
+	}
 	
-	AO_Pitch = GetBaseAimRotation().Pitch;
+	CalculateAO_Pitch();
+}
 
+void ABlasterCharacter::CalculateAO_Pitch()
+{
+	AO_Pitch = GetBaseAimRotation().Pitch;
 	if (AO_Pitch > 90 && !IsLocallyControlled())
 	{
 		AO_Pitch -= 360;
@@ -345,6 +359,16 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 		}
 	}
 }
+
+void ABlasterCharacter::SimProxiesTurn()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	
+	bRotateRootBone = false;
+	CalculateAO_Pitch();
+}
+
+
 
 AWeapon* ABlasterCharacter::GetEquippedWeapon()
 {
@@ -379,8 +403,13 @@ void ABlasterCharacter::HideMeshIfCharacterClose()
 			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
 		}
 	}
+}
+
+void ABlasterCharacter::OnRep_Health()
+{
 	
 }
+
 
 
 

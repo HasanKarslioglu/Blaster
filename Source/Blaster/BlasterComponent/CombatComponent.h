@@ -34,6 +34,7 @@ protected:
 	
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
+	void Fire();
 
 	void FireButtonPressed(bool bPressed);
 
@@ -85,5 +86,10 @@ private:
 
 	FHUDPackage HUDPackage;
 
+	FTimerHandle FireTimer;
+	void StartFireTimer();
+	void FinishedFireTimer();
+	bool bCanFire = true;
+	
 public:			
 };

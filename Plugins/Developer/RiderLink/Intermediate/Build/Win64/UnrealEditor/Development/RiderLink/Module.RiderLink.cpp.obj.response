@@ -24,7 +24,7 @@ C:\Users\Hasan\Desktop\Blaster\Plugins\Developer\RiderLink\Intermediate\Build\Wi
 /I C:\Users\Hasan\Desktop\Blaster\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
 /I C:\Users\Hasan\Desktop\Blaster\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
 /I ThirdParty\mimalloc\include
-/I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\INCLUDE"
+/I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\INCLUDE"
 /I "C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt"
 /I "C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared"
