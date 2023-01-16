@@ -8,7 +8,6 @@ USTRUCT(BlueprintType)
 struct FHUDPackage
 {
 	GENERATED_BODY();
-
 public:
 	class UTexture2D* CrosshairsCenter;
 	UTexture2D* CrosshairsLeft;
@@ -26,6 +25,16 @@ class BLASTER_API ABlasterHUD : public AHUD
 
 public:
 	virtual void DrawHUD() override;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	TSubclassOf<UUserWidget> CharacterOverlayClass;
+
+	class UCharacterOverlay* CharacterOverlay;
+
+protected:
+
+	virtual void BeginPlay() override;
+	void addCharacterOverlay();
 	
 private:
 	FHUDPackage HudPackage;
