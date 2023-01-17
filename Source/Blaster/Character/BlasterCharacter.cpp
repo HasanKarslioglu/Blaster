@@ -108,9 +108,40 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 	}	
 }
 
+void ABlasterCharacter::PlayElimMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ElimMontage)
+	{
+		AnimInstance->Montage_Play(ElimMontage);
+	}
+}
+
 void ABlasterCharacter::Elim()
 {
+	Multicast_Elim();
+	GetWorldTimerManager().SetTimer(
+		ElimTimerHandle,
+		this,
+		&ABlasterCharacter::ElimTimerFinished,
+		ElimDelay
+		);
 	
+}
+
+void ABlasterCharacter::Multicast_Elim_Implementation()
+{
+	bElimmed = true;
+	PlayElimMontage();
+}
+
+void ABlasterCharacter::ElimTimerFinished()
+{
+	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	if (BlasterGameMode)
+	{
+		BlasterGameMode->RequestRespawn(this, Controller);
+	}
 }
 
 void ABlasterCharacter::PlayHitReactMontage()
@@ -131,9 +162,12 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 {
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
-	PlayHitReactMontage();
 
-	if (Health == 0.f)
+	if (Health > 0.f)
+	{
+		PlayHitReactMontage();
+	}
+	else
 	{
 		ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 		if (BlasterGameMode)
@@ -286,6 +320,8 @@ void ABlasterCharacter::UpdateHUDHealth()
 		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
 	}
 }
+
+
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
@@ -442,7 +478,10 @@ void ABlasterCharacter::HideMeshIfCharacterClose()
 void ABlasterCharacter::OnRep_Health()
 {
 	UpdateHUDHealth();
-	PlayHitReactMontage();
+	if (Health > 0.f)
+	{
+		PlayHitReactMontage();
+	}
 }
 
 

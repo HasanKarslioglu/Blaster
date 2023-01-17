@@ -19,7 +19,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
+	void PlayElimMontage();
+
 	void Elim();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Elim();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -91,7 +95,10 @@ private:
 	UAnimMontage* FireWeaponMontage;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ElimMontage;
 
+	
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 
@@ -104,6 +111,14 @@ private:
 	class ABlasterPlayerController	* BlasterPlayerController;
 
 	void UpdateHUDHealth();
+
+	bool bElimmed = false;
+
+	FTimerHandle ElimTimerHandle;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+	void ElimTimerFinished();
 	
 	//--------------------------SETTERS ANG GETTERS--------------------------//
 public:
@@ -120,4 +135,5 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const {return FollowCamera;}
 	FVector GetHitTarget() const;
 	FORCEINLINE bool ShouldRotateRootBone() const {return bRotateRootBone;}
+	FORCEINLINE bool IsElimmed() const {return bElimmed;}
 };
