@@ -55,6 +55,8 @@ protected:
 
 	virtual void Destroyed() override;
 	
+	void PollInit();
+	
 private:
 	//--------------------------MESH AND CAMERA--------------------------//
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -147,6 +149,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ElimBotSound;
+
+	class ABlasterPlayerState* BlasterPlayerState;
+
 	
 	//--------------------------SETTERS ANG GETTERS--------------------------//
 public:
