@@ -1,4 +1,4 @@
-
+	
 #pragma once
 
 #include "CoreMinimal.h"
@@ -52,6 +52,8 @@ protected:
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatedBy, AActor* DamageCauser);
+
+	virtual void Destroyed() override;
 	
 private:
 	//--------------------------MESH AND CAMERA--------------------------//
@@ -137,6 +139,14 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* ElimBotEffect;
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* ElimBotComponent;
+	
+	UPROPERTY(EditAnywhere)
+	class USoundCue* ElimBotSound;
 	
 	//--------------------------SETTERS ANG GETTERS--------------------------//
 public:
@@ -154,4 +164,6 @@ public:
 	FVector GetHitTarget() const;
 	FORCEINLINE bool ShouldRotateRootBone() const {return bRotateRootBone;}
 	FORCEINLINE bool IsElimmed() const {return bElimmed;}
+	FORCEINLINE float GetHealth() const {return Health;}
+	FORCEINLINE float GetMaxHealth() const {return MaxHealth;}
 };

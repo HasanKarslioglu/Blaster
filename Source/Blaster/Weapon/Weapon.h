@@ -44,6 +44,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	bool bAutomatic = true;
 
+	void Dropped();
+
 	
 protected:
 	virtual void BeginPlay() override;
