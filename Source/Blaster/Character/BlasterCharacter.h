@@ -21,6 +21,9 @@ public:
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
 	void PlayElimMontage();
+	void addDeadScreen();
+
+	FString Name = "Player1";
 
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
@@ -154,7 +157,6 @@ private:
 	UPROPERTY()
 	class ABlasterPlayerState* BlasterPlayerState;
 
-	
 	//--------------------------SETTERS ANG GETTERS--------------------------//
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);

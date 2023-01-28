@@ -3,7 +3,9 @@
 #include "BlasterHUD.h"
 
 #include "CharacterOverlay.h"
+#include "BlasterDeadScreen.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 
 
 void ABlasterHUD::BeginPlay()
@@ -21,8 +23,6 @@ void ABlasterHUD::addCharacterOverlay()
 		CharacterOverlay->AddToViewport();
 	}
 }
-
-
 
 void ABlasterHUD::DrawHUD()
 {
@@ -86,6 +86,30 @@ void ABlasterHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 		CrosshairsColor
 	);
 }
+
+
+void ABlasterHUD::ShowDeadScreen()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && BlasterDeadScreenClass)
+	{
+		DeadScreenWidget = CreateWidget<UBlasterDeadScreen>(PlayerController, BlasterDeadScreenClass);
+		DeadScreenWidget->AddToViewport();
+	}
+}
+
+void ABlasterHUD::HideDeadScreen()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && BlasterDeadScreenClass)
+	{
+		DeadScreenWidget->RemoveFromParent();
+	}
+}
+
+
+
+
 
 
 

@@ -121,6 +121,19 @@ void ABlasterCharacter::PlayElimMontage()
 	}
 }
 
+void ABlasterCharacter::addDeadScreen()
+{
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+	if (BlasterPlayerController)
+	{
+		ABlasterHUD* BlasterHUD =Cast<ABlasterHUD>(BlasterPlayerController->GetHUD());
+		if (BlasterHUD)
+		{
+			BlasterHUD->ShowDeadScreen();
+		}
+	}
+}
+
 void ABlasterCharacter::Elim()
 {
 	if (Combat && Combat->EquippedWeapon)
@@ -134,6 +147,7 @@ void ABlasterCharacter::Elim()
 		&ABlasterCharacter::ElimTimerFinished,
 		ElimDelay
 		);
+	addDeadScreen();
 }
 
 
@@ -185,10 +199,16 @@ void ABlasterCharacter::Multicast_Elim_Implementation()
 	{
 		UGameplayStatics::SpawnSoundAtLocation(this, ElimBotSound, GetActorLocation());
 	}
+
+	if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
+	{
+		addDeadScreen();
+	}
 }
 
 void ABlasterCharacter::ElimTimerFinished()
 {
+
 	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 	if (BlasterGameMode)
 	{

@@ -9,7 +9,7 @@ struct FHUDPackage
 {
 	GENERATED_BODY();
 public:
-	class UTexture2D* CrosshairsCenter;
+	UTexture2D* CrosshairsCenter;
 	UTexture2D* CrosshairsLeft;
 	UTexture2D* CrosshairsRight;
 	UTexture2D* CrosshairsTop;
@@ -28,9 +28,16 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	TSubclassOf<UUserWidget> CharacterOverlayClass;
-
+	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
-
+	
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	TSubclassOf<UUserWidget> BlasterDeadScreenClass;
+	UPROPERTY()
+	class UBlasterDeadScreen* DeadScreenWidget;
+	void ShowDeadScreen();
+	void HideDeadScreen();
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -40,10 +47,9 @@ private:
 	FHUDPackage HudPackage;
 	
 	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread, FLinearColor CrosshairsColor);
-
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 12.f;
-	
+
 public:
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) {HudPackage = Package;};
 };
