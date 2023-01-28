@@ -113,7 +113,8 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
-	class ABlasterPlayerController	* BlasterPlayerController;
+	UPROPERTY()
+	class ABlasterPlayerController* BlasterPlayerController;
 
 	void UpdateHUDHealth();
 
@@ -150,6 +151,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ElimBotSound;
 
+	UPROPERTY()
 	class ABlasterPlayerState* BlasterPlayerState;
 
 	
