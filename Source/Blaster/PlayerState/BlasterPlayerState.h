@@ -32,7 +32,8 @@ private:
 	int32 Defeats;
 	UPROPERTY(ReplicatedUsing = OnRep_KilledBy)
 	FString KilledBy;
-	
+
+	void FinishedKillerTimer();
 };
 
 

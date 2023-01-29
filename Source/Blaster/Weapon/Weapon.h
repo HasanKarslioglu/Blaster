@@ -25,6 +25,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void OnRep_Owner() override;
 	virtual void Fire(const FVector& HitTarget);
 
 	//--------------------------TEXTURES FOR CROSSHAIRS--------------------------//
@@ -45,6 +46,7 @@ public:
 	bool bAutomatic = true;
 
 	void Dropped();
+	void SetHUDAmmo();
 
 	
 protected:
@@ -93,6 +95,21 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float ZoomInterpSpeed = 20.f;
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	int32 Ammo;
+
+	UFUNCTION()
+	void OnRep_Ammo();
+	void SpendRound();
+	
+	UPROPERTY(EditAnywhere)
+	int32 MagCacacity;
+
+	UPROPERTY()
+	class ABlasterCharacter* BlasterOwnerCharacter;
+	UPROPERTY()
+	class ABlasterPlayerController* BlasterOwnerController;
 	
 public:
 	void SetWeaponState(EWeaponState newState);
@@ -100,4 +117,5 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const {return WeaponMesh;};
 	FORCEINLINE float GetZoomedFOV() const {return ZoomedFOV;};
 	FORCEINLINE float GetZoomInterpSpeed() const {return ZoomInterpSpeed;};
+	FORCEINLINE bool IsEmpty() const {return Ammo <= 0;};
 };

@@ -4,6 +4,7 @@
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Net/UnrealNetwork.h"
+#include "Particles/Collision/ParticleModuleCollisionGPU.h"
 
 
 void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -74,6 +75,12 @@ void ABlasterPlayerState::OnRep_Defeats()
 void ABlasterPlayerState::AddToKilledBy(FString KillerName)
 {
 	KilledBy = KillerName;
+	FTimerHandle KillerTime;
+	GetWorld()->GetTimerManager().SetTimer(KillerTime,this, &ABlasterPlayerState::FinishedKillerTimer, 0.5f);
+}
+
+void ABlasterPlayerState::FinishedKillerTimer()
+{
 	UpdateKilledByHUD();
 }
 
