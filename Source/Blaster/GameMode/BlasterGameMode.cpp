@@ -20,6 +20,10 @@ void ABlasterGameMode::PlayerEliminated(ABlasterCharacter* ElimmedCharacter, ABl
 	if(VictimPlayerState)
 	{
 		VictimPlayerState->AddToDefeats(1);
+		if (AttackerPlayerState)
+		{
+			VictimPlayerState->AddToKilledBy(AttackerPlayerState->GetPawn()->GetName());
+		}
 	}
 	
 	if (ElimmedCharacter)

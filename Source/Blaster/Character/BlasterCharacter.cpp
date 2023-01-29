@@ -358,6 +358,12 @@ void ABlasterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	UpdateHUDHealth();
+	
+	BlasterPlayerState = Cast<ABlasterPlayerState>(GetPlayerState());
+	if (BlasterPlayerState)
+	{
+		BlasterPlayerState->AddToKilledBy("");	
+	}
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);

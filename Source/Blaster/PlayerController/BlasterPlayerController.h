@@ -15,8 +15,7 @@ public:
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);
-
-	FString GetPlayerName();
+	void SetHUDKilledBy(FString KillerName);
 	
 	virtual void OnPossess(APawn* InPawn) override;	
 protected:

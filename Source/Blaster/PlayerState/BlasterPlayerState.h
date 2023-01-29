@@ -14,10 +14,14 @@ public:
 	virtual void OnRep_Score() override;
 	UFUNCTION()
 	virtual void OnRep_Defeats();
+	void UpdateKilledByHUD();
+	UFUNCTION()
+	virtual void OnRep_KilledBy();
 	
 	void AddToScore(float ScoreAmount);
 	void AddToDefeats(int32 DefeatsAmount);
-	
+	void AddToKilledBy(FString KillerName);
+
 private:
 	UPROPERTY()
 	class ABlasterCharacter* Character;
@@ -26,6 +30,9 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
+	UPROPERTY(ReplicatedUsing = OnRep_KilledBy)
+	FString KilledBy;
+	
 };
 
 

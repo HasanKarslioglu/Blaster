@@ -3,8 +3,10 @@
 #include "BlasterPlayerController.h"
 
 #include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/HUD/BlasterDeadScreen.h"
 #include "Blaster/HUD/BlasterHUD.h"
 #include "Blaster/HUD/CharacterOverlay.h"
+#include "Blaster/PlayerState/BlasterPlayerState.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 
@@ -64,12 +66,34 @@ void ABlasterPlayerController::SetHUDDefeats(int32 Defeats)
 	}
 }
 
+void ABlasterPlayerController::SetHUDKilledBy(FString KillerName)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+
+	bool bHUDValid =
+		BlasterHUD &&
+		BlasterHUD->DeadScreenWidget &&
+		BlasterHUD->DeadScreenWidget->KilledTextBlock;
+	
+	if (bHUDValid)
+	{
+		FString KilledString = "Killed by " + KillerName;
+		BlasterHUD->DeadScreenWidget->KilledTextBlock->SetText(FText::FromString(KilledString));
+	}
+}
+
 void ABlasterPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(InPawn);
+
 	if (BlasterCharacter)
 	{
+		ABlasterPlayerState* BlasterPlayerState = Cast<ABlasterPlayerState>(BlasterCharacter->GetPlayerState());
+		if (BlasterPlayerState)
+		{
+			BlasterPlayerState->AddToKilledBy("");
+		}
 		SetHUDHealth(BlasterCharacter->GetHealth(),BlasterCharacter->GetMaxHealth());
 	}
 }

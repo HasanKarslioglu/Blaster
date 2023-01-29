@@ -10,6 +10,7 @@ void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABlasterPlayerState, Defeats);
+	DOREPLIFETIME(ABlasterPlayerState, KilledBy);
 }
 
 //For Server!!!!!!!!!!!
@@ -66,6 +67,30 @@ void ABlasterPlayerState::OnRep_Defeats()
 		if (Controller)
 		{
 			Controller->SetHUDDefeats(Defeats);
+		}
+	}
+}
+
+void ABlasterPlayerState::AddToKilledBy(FString KillerName)
+{
+	KilledBy = KillerName;
+	UpdateKilledByHUD();
+}
+
+void ABlasterPlayerState::OnRep_KilledBy()
+{
+	UpdateKilledByHUD();
+}
+
+void ABlasterPlayerState::UpdateKilledByHUD()
+{
+	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
+	if (Character)
+	{
+		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{
+			Controller->SetHUDKilledBy(KilledBy);
 		}
 	}
 }
