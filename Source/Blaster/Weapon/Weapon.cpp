@@ -213,7 +213,7 @@ void AWeapon::SetHUDAmmo()
 		BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->Controller) : BlasterOwnerController;
 		if (BlasterOwnerController)
 		{
-			BlasterOwnerController->SetHUDWeaponAmmo(Ammo, MagCacacity);
+			BlasterOwnerController->SetHUDWeaponAmmo(Ammo);
 		}
 	}
 }

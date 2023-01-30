@@ -167,7 +167,7 @@ void ABlasterCharacter::Multicast_Elim_Implementation()
 	PlayElimMontage();
 	if (BlasterPlayerController)
 	{
-		BlasterPlayerController->SetHUDWeaponAmmo(0,0);	
+		BlasterPlayerController->SetHUDWeaponAmmo(0);	
 	}
 	if (DissolveMaterialInstance)
 	{

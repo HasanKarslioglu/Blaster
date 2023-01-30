@@ -82,7 +82,7 @@ void ABlasterPlayerController::SetHUDKilledBy(FString KillerName)
 	}
 }
 
-void ABlasterPlayerController::SetHUDWeaponAmmo(int32 Ammo, int32 MagCapaticy)
+void ABlasterPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 {
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	bool bHUDValid =
@@ -92,8 +92,23 @@ void ABlasterPlayerController::SetHUDWeaponAmmo(int32 Ammo, int32 MagCapaticy)
 
 	if (bHUDValid)
 	{
-		FString AmmoText = FString::Printf(TEXT("%i/%i"), Ammo, MagCapaticy);
+		FString AmmoText = FString::Printf(TEXT("%i"), Ammo);
 		BlasterHUD->CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(AmmoText));
+	}
+}
+
+void ABlasterPlayerController::SetHUDCarriedAmmo(int32 Ammo)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	bool bHUDValid =
+		BlasterHUD &&
+		BlasterHUD->CharacterOverlay &&
+		BlasterHUD->CharacterOverlay->CarriedAmmoAmount;
+
+	if (bHUDValid)
+	{
+		FString CarriedAmmoText = FString::Printf(TEXT("%i"), Ammo);
+		BlasterHUD->CharacterOverlay->CarriedAmmoAmount->SetText(FText::FromString(CarriedAmmoText));
 	}
 }
 
