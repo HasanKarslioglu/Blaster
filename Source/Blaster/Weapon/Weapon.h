@@ -3,7 +3,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WeaponTypes.h"
 #include "Weapon.generated.h"
+
 
 UENUM(BlueprintType)
 enum class EWeaponState : uint8
@@ -110,6 +112,9 @@ private:
 	class ABlasterCharacter* BlasterOwnerCharacter;
 	UPROPERTY()
 	class ABlasterPlayerController* BlasterOwnerController;
+
+	UPROPERTY(EditAnywhere)
+	EWeaponTypes WeaponType;
 	
 public:
 	void SetWeaponState(EWeaponState newState);
@@ -118,4 +123,5 @@ public:
 	FORCEINLINE float GetZoomedFOV() const {return ZoomedFOV;};
 	FORCEINLINE float GetZoomInterpSpeed() const {return ZoomInterpSpeed;};
 	FORCEINLINE bool IsEmpty() const {return Ammo <= 0;};
+	FORCEINLINE EWeaponTypes GetWeaponType() const {return WeaponType;}
 };

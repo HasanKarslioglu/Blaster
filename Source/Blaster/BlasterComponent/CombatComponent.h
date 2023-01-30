@@ -24,6 +24,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void EquipWeapon(AWeapon* WeaponToEquip);
+	void Reload();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -48,6 +49,9 @@ protected:
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
 	void SetHUDCrosshairs(float DeltaTime);
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
 		
 private:
 	UPROPERTY()
@@ -102,9 +106,11 @@ private:
 	void OnRep_CarriedAmmo();
 
 	TMap<EWeaponTypes, int32> CarriedAmmoMap;
-
-	
-public:			
+	UPROPERTY(EditAnywhere)
+	int32 StartingARAmmo = 30;
+	void InitializeCarriedAmmo();
+public:
+	void SetCarriedAmmo(int32 _CarriedAmmo);
 };
 
 

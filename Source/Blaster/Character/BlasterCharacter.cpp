@@ -72,6 +72,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ABlasterCharacter::EquipButtonPressed);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ABlasterCharacter::CrouchButtonPressed);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABlasterCharacter::ReloadButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ABlasterCharacter::AimButtonPressed);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ABlasterCharacter::AimButtonReleased);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABlasterCharacter::FireButtonPressed);
@@ -112,6 +113,28 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 	}	
 }
 
+void ABlasterCharacter::PlayReloadMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance && ReloadMontage)
+	{
+		AnimInstance->Montage_Play(ReloadMontage);
+		FName SectionName;
+		switch (Combat->EquippedWeapon->GetWeaponType())
+		{
+		case EWeaponTypes::EWT_AssaultRifle:
+			SectionName = FName("Riffle");
+			break;
+		default:
+			break;
+		}
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
 void ABlasterCharacter::PlayElimMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -139,6 +162,7 @@ void ABlasterCharacter::Elim()
 	if (Combat && Combat->EquippedWeapon)
 	{
 		Combat->EquippedWeapon->Dropped();
+		Combat->SetCarriedAmmo(0);
 	}
 	Multicast_Elim();
 	GetWorldTimerManager().SetTimer(
@@ -167,7 +191,7 @@ void ABlasterCharacter::Multicast_Elim_Implementation()
 	PlayElimMontage();
 	if (BlasterPlayerController)
 	{
-		BlasterPlayerController->SetHUDWeaponAmmo(0);	
+		BlasterPlayerController->SetHUDWeaponAmmo(0);
 	}
 	if (DissolveMaterialInstance)
 	{
@@ -215,6 +239,10 @@ void ABlasterCharacter::ElimTimerFinished()
 	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
 	if (BlasterGameMode)
 	{
+		if (Combat)
+		{
+			Combat->SetCarriedAmmo(0);
+		}
 		BlasterGameMode->RequestRespawn(this, Controller);
 	}
 }
@@ -288,6 +316,14 @@ void ABlasterCharacter::CrouchButtonPressed()
 	else if(!bIsCrouched && !GetMovementComponent()->IsFalling())
 	{
 		Crouch();
+	}
+}
+
+void ABlasterCharacter::ReloadButtonPressed()
+{
+	if (Combat)
+	{
+		Combat->Reload();
 	}
 }
 
