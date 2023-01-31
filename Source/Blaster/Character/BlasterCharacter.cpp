@@ -632,6 +632,11 @@ void ABlasterCharacter::OnRep_Health()
 	}
 }
 
+ECombatState ABlasterCharacter::GetCombatState() const
+{
+	if (Combat == nullptr) return ECombatState::ECT_MAX;
+	return Combat->CombatState;
+}
 
 
 

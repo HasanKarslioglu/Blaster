@@ -25,8 +25,8 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
+	DOREPLIFETIME(UCombatComponent, CombatState);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
-	
 }
 
 //--------------------------BEGIN PLAY--------------------------//
@@ -126,7 +126,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0)
+	if (CarriedAmmo > 0 && CombatState != ECombatState::ECT_Reloading)
 	{
 		ServerReload();
 	}
@@ -136,6 +136,32 @@ void UCombatComponent::ServerReload_Implementation()
 {
 	if (Character == nullptr) return;
 
+	CombatState = ECombatState::ECT_Reloading;
+	HandleReload();
+}
+
+void UCombatComponent::FinishedReloading()
+{
+	if (Character == nullptr) return;
+	if (Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECT_Unoccupied;
+	}
+}
+
+void UCombatComponent::OnRep_CombatState()
+{
+	switch (CombatState)
+	{
+	case ECombatState::ECT_Reloading:
+		HandleReload();
+		break;
+	}		
+}
+
+void UCombatComponent::HandleReload()
+{
+	
 	Character->PlayReloadMontage();
 }
 

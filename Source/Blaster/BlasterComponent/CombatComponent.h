@@ -5,6 +5,7 @@
 #include "Blaster/HUD/BlasterHUD.h"
 #include "Components/ActorComponent.h"
 #include "Blaster/Weapon/WeaponTypes.h"
+#include "Blaster/BlasterTypes/CombatTypes.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGHT 50000.f;
@@ -25,6 +26,8 @@ public:
 	
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void Reload();
+	UFUNCTION(BlueprintCallable)
+	void FinishedReloading();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -52,7 +55,8 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
-		
+	void HandleReload();
+	
 private:
 	UPROPERTY()
 	ABlasterCharacter* Character;
@@ -109,6 +113,13 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 StartingARAmmo = 30;
 	void InitializeCarriedAmmo();
+	
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState = ECombatState::ECT_Unoccupied;
+	UFUNCTION()
+	void OnRep_CombatState();
+	
+	
 public:
 	void SetCarriedAmmo(int32 _CarriedAmmo);
 };
