@@ -56,6 +56,7 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
 	void HandleReload();
+	int32 AmountToReload();
 	
 private:
 	UPROPERTY()
@@ -118,6 +119,8 @@ private:
 	ECombatState CombatState = ECombatState::ECT_Unoccupied;
 	UFUNCTION()
 	void OnRep_CombatState();
+
+	void UpdateAmmoValues();
 	
 	
 public:
