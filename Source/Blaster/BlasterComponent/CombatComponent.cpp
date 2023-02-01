@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Sound/SoundCue.h"
 
 //--------------------------CONSTRUCTER--------------------------//
 UCombatComponent::UCombatComponent()
@@ -98,6 +99,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		EquippedWeapon->Dropped();
 	}
 	
+	
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 
@@ -114,6 +116,19 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	{
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
+
+	if (Character && EquippedWeapon->EquipSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			EquippedWeapon->EquipSound,
+			Character->GetActorLocation());
+	}
+	
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
+	}
 	
 	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 	if (Controller)
@@ -123,6 +138,30 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if (EquippedWeapon && Character)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+		const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+		if (HandSocket)
+		{
+			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+		}
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
+		EquippedWeapon->SetHUDAmmo();
+		
+		if (EquippedWeapon->EquipSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				EquippedWeapon->EquipSound,
+				Character->GetActorLocation());
+		}
+	}
 }
 
 void UCombatComponent::Reload()
@@ -209,21 +248,6 @@ int32 UCombatComponent::AmountToReload()
 	return 0;
 }
 
-
-void UCombatComponent::OnRep_EquippedWeapon()
-{
-	if (EquippedWeapon && Character)
-	{
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
-		if (HandSocket)
-		{
-			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-		}
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		Character->bUseControllerRotationYaw = true;
-	}
-}
 
 
 void UCombatComponent::FireButtonPressed(bool bPressed)
@@ -436,6 +460,11 @@ void UCombatComponent::FinishedFireTimer(){
 	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
 	{
 		Fire();
+	}
+	
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 }
 

@@ -41,6 +41,9 @@ public:
 	class UTexture2D* CrosshairsTop;
 	UPROPERTY(EditAnywhere, Category = Crosshairs)
 	class UTexture2D* CrosshairsBottom;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* EquipSound;
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float FireDelay = 0.13f;
