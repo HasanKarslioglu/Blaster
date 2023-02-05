@@ -37,11 +37,11 @@ public:
 	class UBlasterDeadScreen* DeadScreenWidget;
 	void ShowDeadScreen();
 	void HideDeadScreen();
+	void addCharacterOverlay();
 	
 protected:
 
 	virtual void BeginPlay() override;
-	void addCharacterOverlay();
 	
 private:
 	FHUDPackage HudPackage;
