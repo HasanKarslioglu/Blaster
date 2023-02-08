@@ -2,6 +2,7 @@
 
 #include "BlasterPlayerController.h"
 
+#include "Blaster/BlasterComponent/CombatComponent.h"
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Blaster/GameMode/BlasterGameMode.h"
 #include "Blaster/HUD/Announcement.h"
@@ -162,7 +163,15 @@ void ABlasterPlayerController::HandleCooldown()
 			}
 		}
 	}
+	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
+	
+	if (BlasterCharacter && BlasterCharacter->GetCombat())
+	{
+		BlasterCharacter->bDisableGameplay = true;
+		BlasterCharacter->GetCombat()->FireButtonPressed(false);
+	}
 }
+
 
 void ABlasterPlayerController::ServerCheckMatchState_Implementation()
 {

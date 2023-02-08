@@ -28,6 +28,9 @@ public:
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Elim();
+
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -87,7 +90,8 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
-	
+	void RotateInPlace(float DeltaTime);
+
 	//--------------------------TURNING IN PLACE--------------------------//
 	float AO_Yaw;
 	float AO_Pitch;
@@ -179,4 +183,6 @@ public:
 	FORCEINLINE float GetHealth() const {return Health;}
 	FORCEINLINE float GetMaxHealth() const {return MaxHealth;}
 	ECombatState GetCombatState() const;
+	FORCEINLINE UCombatComponent* GetCombat() const {return Combat;}
+
 };
