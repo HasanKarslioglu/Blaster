@@ -35,18 +35,18 @@ public:
 	TSubclassOf<UUserWidget> AnnouncementClass;
 	UPROPERTY()
 	class UAnnouncement* Announcement;
-
 	
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	TSubclassOf<UUserWidget> BlasterDeadScreenClass;
 	UPROPERTY()
 	class UBlasterDeadScreen* DeadScreenWidget;
+	
 	void ShowDeadScreen();
 	void HideDeadScreen();
 	void addCharacterOverlay();
 	void AddAnnouncement();
+	
 protected:
-
 	virtual void BeginPlay() override;
 	
 private:
