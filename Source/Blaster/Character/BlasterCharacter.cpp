@@ -99,6 +99,25 @@ void ABlasterCharacter::PostInitializeComponents()
 	}
 }
 
+
+//--------------------------BEGIN PLAY--------------------------//
+void ABlasterCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UpdateHUDHealth();
+	
+	BlasterPlayerState = Cast<ABlasterPlayerState>(GetPlayerState());
+	if (BlasterPlayerState)
+	{
+		BlasterPlayerState->AddToKilledBy("");	
+	}
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
+	}
+}
+
 //--------------------------TICK--------------------------//
 void ABlasterCharacter::Tick(float DeltaTime)
 {
@@ -402,25 +421,6 @@ void ABlasterCharacter::PollInit()
 			BlasterPlayerState->AddToScore(0.f);
 			BlasterPlayerState->AddToDefeats(0);
 		}
-	}
-}
-
-
-//--------------------------BEGIN PLAY--------------------------//
-void ABlasterCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	UpdateHUDHealth();
-	
-	BlasterPlayerState = Cast<ABlasterPlayerState>(GetPlayerState());
-	if (BlasterPlayerState)
-	{
-		BlasterPlayerState->AddToKilledBy("");	
-	}
-	if (HasAuthority())
-	{
-		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
 	}
 }
 
