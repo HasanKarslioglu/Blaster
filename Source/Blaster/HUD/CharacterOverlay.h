@@ -32,4 +32,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* MatchCountdownText;
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void PlayTimeUrgencyAnim();
 };

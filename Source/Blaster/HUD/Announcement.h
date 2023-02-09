@@ -19,4 +19,6 @@ public:
 	
 	UPROPERTY(meta =(BindWidget))
 	UTextBlock* InfoText;
+
+
 };
