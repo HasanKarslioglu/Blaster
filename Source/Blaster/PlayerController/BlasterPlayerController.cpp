@@ -106,7 +106,6 @@ void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeO
 
 
 
-
 void ABlasterPlayerController::OnMatchStateSet(FName State)
 {
 	MatchState = State;
