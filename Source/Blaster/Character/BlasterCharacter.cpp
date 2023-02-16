@@ -14,7 +14,7 @@
 #include "Blaster/GameMode/BlasterGameMode.h"
 #include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Blaster/PlayerState/BlasterPlayerState.h"
-#include "Components/CapsuleComponent.h"
+#include "Components/CapsuleComponent.h" 
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
@@ -173,6 +173,9 @@ void ABlasterCharacter::PlayReloadMontage()
 			SectionName = FName("Riffle");
 			break;
 		case EWeaponTypes::EWT_Pistol:
+			SectionName = FName("Riffle");
+			break;
+		case EWeaponTypes::EWT_SubmachineGun:
 			SectionName = FName("Riffle");
 			break;
 		default:
