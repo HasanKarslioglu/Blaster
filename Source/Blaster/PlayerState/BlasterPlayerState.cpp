@@ -45,7 +45,7 @@ void ABlasterPlayerState::OnRep_Score()
 	}
 }
 
-inline void ABlasterPlayerState::AddToDefeats(int32 DefeatsAmount)
+void ABlasterPlayerState::AddToDefeats(int32 DefeatsAmount)
 {
 	Defeats += DefeatsAmount;
 	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
