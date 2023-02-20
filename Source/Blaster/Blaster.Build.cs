@@ -10,7 +10,7 @@ public class Blaster : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Crunch" });
+		PrivateDependencyModuleNames.AddRange(new string[] { });
 
         bEnableExceptions = true;
         // Uncomment if you are using Slate UI
