@@ -51,6 +51,8 @@ void UCombatComponent::BeginPlay()
 
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
+	if (Character == nullptr || EquippedWeapon == nullptr) return;
+	
 	bAiming = bIsAiming;
 	ServerSetAiming(bAiming);
 	
@@ -64,7 +66,12 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 		{
 			Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 		}
-	}	
+	}
+
+	if (Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponTypes::EWT_SniperRiffle)
+	{
+		Character->ShowSniperWidget(bIsAiming);
+	}
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
@@ -289,6 +296,10 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize Tr
 	{
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);	
+	}
+	if (Character && Character->IsLocallyControlled() && bAiming && EquippedWeapon && EquippedWeapon->GetWeaponType() == EWeaponTypes::EWT_SniperRiffle)
+	{
+		SetAiming(false);
 	}
 }
 

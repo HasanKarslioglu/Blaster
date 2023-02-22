@@ -157,7 +157,7 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 void ABlasterCharacter::PlayReloadMontage()
 {
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
+	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (AnimInstance && ReloadMontage)
@@ -295,6 +295,11 @@ void ABlasterCharacter::Multicast_Elim_Implementation()
 	{
 		addDeadScreen();
 	}
+
+	if (IsLocallyControlled())
+	{
+		ShowSniperWidget(false);
+	}
 }
 
 void ABlasterCharacter::ElimTimerFinished()
@@ -400,7 +405,7 @@ void ABlasterCharacter::AimButtonPressed()
 
 void ABlasterCharacter::AimButtonReleased()
 {
-	if (Combat)
+	if (Combat && Combat->bAiming)
 	{
 		Combat->SetAiming(false);
 	}
