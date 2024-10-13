@@ -9,6 +9,7 @@
 			"BlueprintFunction.Generated.cpp.obj",
 			"BlueprintHighlighter.Generated.cpp.obj",
 			"BlueprintReference.Generated.cpp.obj",
+			"ConnectionInfo.Generated.cpp.obj",
 			"EmptyScriptCallStack.Generated.cpp.obj",
 			"IScriptCallStack.Generated.cpp.obj",
 			"IScriptCallStack_Unknown.Generated.cpp.obj",
